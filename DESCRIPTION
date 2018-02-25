@@ -1,0 +1,24 @@
+Package: sword
+Type: Package
+Title: Switches WithOut Remarkable Differential expression
+Version: 0.1.0
+Authors@R: c(person("Hector", "Climente-Gonzalez", 
+                    email = "hector.climente@curie.fr",
+                    role = c("aut", "cre")),
+             person("Eduardo", "Eyras", role = "aut"))
+Maintainer: Hector Climente-Gonzalez <hector.climente@curie.fr>
+Description: Calculate isoform switches from transcriptomic data at 
+    sample-level. In order to make easier to evaluate the effect, sword only 
+    looks for switches in genes that are not over- or under-expressed in that
+    sample.
+Imports:
+    dplyr,
+    edgeR,
+    readr,
+    tibble,
+    tidyr
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.0.1
+Suggests: testthat
