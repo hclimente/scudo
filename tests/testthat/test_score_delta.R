@@ -21,7 +21,7 @@ tx2gene <- read.table(text = "
                       B1 B
                       ", header = TRUE, stringsAsFactors = FALSE)
 dPSI <- calculate_dPSI(expression, tx2gene)
-pdPSI <- score_dPSI(dPSI, minSamples = 2)
+pdPSI <- score_delta(dPSI, transcript, psiNormal, dPSI, minSamples = 2)
 
 test_that('output is as expected', {
 
@@ -32,10 +32,9 @@ test_that('output is as expected', {
 
 test_that('dPSI p-value calculation is correct', {
 
-    # transcript A1
     for (tx in c('A1','A2','A3')) {
         f <- compute_ecdf(subset(dPSI, transcript == tx)$psiNormal, 0, 2)
-        expect_equal(subset(pdPSI, transcript == tx)$pdPSI,
+        expect_equal(subset(pdPSI, transcript == tx)$p,
                      f(subset(pdPSI, transcript == tx)$dPSI))
     }
 
