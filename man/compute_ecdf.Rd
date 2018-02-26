@@ -4,7 +4,7 @@
 \alias{compute_ecdf}
 \title{Get empirical distribution}
 \usage{
-compute_ecdf(x, minValue, minSamples = 10)
+compute_ecdf(x, minValue, minSamples)
 }
 \arguments{
 \item{x}{numerical vector}

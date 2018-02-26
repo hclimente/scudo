@@ -10,18 +10,18 @@ tpm2long <- function(wide, colname) {
 #' @export
 calculate_dPSI <- function(expression, tx2gene) {
 
-    dpsi <- expression %>%
+    dPSI <- expression %>%
         left_join(tx2gene, by = "transcript") %>%
         group_by(gene, sample) %>%
         mutate(psiNormal = tpmNormal/sum(tpmNormal),
                psiTumor = tpmTumor/sum(tpmTumor)) %>%
         ungroup
 
-    normalMedianPsi <- dpsi %>%
+    normalMedianPsi <- dPSI %>%
         group_by(transcript) %>%
         summarize(psiNormalMedian = median(psiNormal, na.rm = T))
 
-    left_join(dpsi, normalMedianPsi, by = "transcript") %>%
+    left_join(dPSI, normalMedianPsi, by = "transcript") %>%
         mutate(psiNormal = ifelse(is.na(psiNormal), psiNormalMedian, psiNormal),
                dPSI = psiNormal - psiTumor) %>%
         select(-psiNormalMedian)
@@ -30,11 +30,12 @@ calculate_dPSI <- function(expression, tx2gene) {
 
 #' @importFrom dplyr group_by mutate ungroup %>%
 #' @export
-score_dPSI <- function(dpsi) {
+score_dPSI <- function(dPSI, minValue = 0, minSamples = 10) {
 
-    pdPSI <- by(dpsi, dpsi$transcript, function(x) { compute_ecdf(x$psiNormal, 0) })
+    pdPSI <- by(dPSI$psiNormal, dPSI$transcript, compute_ecdf,
+                minValue, minSamples)
 
-    dpsi %>%
+    dPSI %>%
         group_by(transcript) %>%
         mutate(pdPSI = pdPSI[[unique(transcript)]](dPSI)) %>%
         ungroup

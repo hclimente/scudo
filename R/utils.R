@@ -13,7 +13,7 @@
 #' \item {return ecdf otherwise, counting that the minimum p-value will be 1/n+1
 #' }}
 #' @export
-compute_ecdf <- function(x, minValue, minSamples = 10){
+compute_ecdf <- function(x, minValue, minSamples){
 
     v <- as.numeric(x)
 
