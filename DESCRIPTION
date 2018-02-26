@@ -1,6 +1,6 @@
-Package: sword
+Package: scudo
 Type: Package
-Title: Switches WithOut Remarkable Differential expression
+Title: Switch Catcher, Uprooting Differentially-expressed Ones
 Version: 0.1.0
 Authors@R: c(person("Hector", "Climente-Gonzalez", 
                     email = "hector.climente@curie.fr",
@@ -8,7 +8,7 @@ Authors@R: c(person("Hector", "Climente-Gonzalez",
              person("Eduardo", "Eyras", role = "aut"))
 Maintainer: Hector Climente-Gonzalez <hector.climente@curie.fr>
 Description: Calculate isoform switches from transcriptomic data at 
-    sample-level. In order to make easier to evaluate the effect, sword only 
+    sample-level. In order to make easier to evaluate the effect, scudo only 
     looks for switches in genes that are not over- or under-expressed in that
     sample.
 Imports:

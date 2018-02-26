@@ -1,4 +1,4 @@
 library(testthat)
-library(sword)
+library(scudo)
 
-test_check("sword")
+test_check("scudo")
