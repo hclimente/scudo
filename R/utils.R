@@ -19,19 +19,43 @@ compute_ecdf <- function(x, minValue, minSamples){
 
     # discard cases with less than 10 valid cases
     if ( sum(!is.na(v)) < minSamples | sum(v[!is.na(v)] >= minValue) < minSamples){
-        return(function(x){return(rep(NA, length(x)))})
+        f <- uninformativeOutput
     } else {
         diffMatrix <- abs(outer(v,v,"-"))
         subtraction <- diffMatrix[lower.tri(diffMatrix, diag = FALSE)]
 
         if (all(subtraction[!is.na(subtraction)]==0)){
-            return(function(x){
-                p <- rep(NA,length(x))
-                p[x==0] <- 0
-                p[x>0] <- 1
-                return(p)})
+            f <- uninformativeInput
         } else {
-            return(ecdf(subtraction))
+            f <- ecdf(subtraction)
         }
     }
+
+    return(f)
+}
+
+#' Pseudo-ecdf when all values are 0
+#'
+#' @description ecdf function where anything higher than 0 gets a p-value of 1.
+#' @param x numerical vector
+#' @return Numerical vector with 0 when the input is 0, and 1 when it is > 0.
+uninformativeInput <- function(x) {
+
+    p <- rep(NA, length(x))
+    p[x == 0] <- 0
+    p[x > 0] <- 1
+    return(p)
+
+}
+
+#' Pseudo-ecdf when input is insufficient
+#'
+#' @description ecdf function where anything returns NA.
+#' @param x numerical vector
+#' @return Numerical vector with NAs
+#' .
+uninformativeOutput <- function(x){
+
+    return(rep(NA, length(x)))
+
 }
