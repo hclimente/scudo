@@ -83,7 +83,7 @@ score_delta <- function(df, probe, ctrl, delta, minValue = 0, minSamples = 10) {
 #' @importFrom edgeR calcNormFactors cpm DGEList
 #' @importFrom dplyr left_join select %>%
 #' @importFrom tibble tibble
-calculate_diff_expression <- function(normalGeneExpression, tumorGeneExpression) {
+calculate_dExpr <- function(normalGeneExpression, tumorGeneExpression) {
 
     # get sample names
     normalSamples <- colnames(normalGeneExpression)
@@ -109,39 +109,5 @@ calculate_diff_expression <- function(normalGeneExpression, tumorGeneExpression)
            pDE = apply(logNormGeneExpression, 1, function(x) {
                wilcox.test(x[normalSamples], x[tumorSamples])$p.value
            }))
-
-}
-
-#' Find isoform switches
-#'
-#' @description Find the isoform switches that match all of the following
-#' conditions: 1) genes are not differentially expressed; 2) abs(deltaPSI) is > 0.05
-#' and more extreme than 1% of the observed variance between controls; 3)
-#' involved transcripts are sufficiently expressed (TPM > 0.1).
-#' @param txInfo data.frame with transcript-level annotation per subject. Must
-#' contain all of the following columns: \code{pDE} indicating if the gene is
-#' differentially expressed; \code{dPSI} indicating the deltaPSI and
-#' \code{pdPSI} scoring how extreme it is; \code{tpmNormal} and \code{tpmTumor}
-#' indicating the expression in the two conditions.
-#' @return A data.frame with the measured isoform switches.
-#' @importFrom dplyr filter group_by summarize ungroup %>%
-#' @export
-find_switches <- function(txInfo) {
-
-    txInfo %>%
-        # remove differentially expressed genes
-        filter(pDE > 0.01) %>%
-        # remove low deltaPSI
-        filter(pdPSI < 0.01 & abs(dPSI) > 0.05) %>%
-        # remove lowly expressed transcript
-        filter((dPSI > 0 & tpmTumor > 0.1) | (dPSI < 0 & tpmNormal > 0.1)) %>%
-        group_by(gene, sample) %>%
-        # remove unelligible genes
-        filter(n() > 1 & any(dPSI > 0) & any(dPSI < 0)) %>%
-        summarize(normal = transcript[which.min(dPSI)],
-                  tumor = transcript[which.max(dPSI)]) %>%
-        ungroup %>%
-        group_by(gene, normal, tumor) %>%
-        summarize(samples = paste(samples, collapse = ','))
 
 }

@@ -14,7 +14,7 @@ test_that('we require at least minSamples', {
 
 })
 
-test_that('we require at least minSamples with minV', {
+test_that('we require at least minSamples with minValue', {
 
     x <- c(1,2,3,4,5,6,7,8,9,10)
     f <- compute_ecdf(x, 2, 10)

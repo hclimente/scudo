@@ -1,5 +1,5 @@
 expression <- read.table(text = "
-                       transcript sample tpmNormal tpmTumor
+                         transcript sample tpmNormal tpmTumor
                          A1 s1 1 1
                          A2 s1 1 1
                          A3 s1 1 1
@@ -20,6 +20,7 @@ tx2gene <- read.table(text = "
                       A3 A
                       B1 B
                       ", header = TRUE, stringsAsFactors = FALSE)
+
 dPSI <- calculate_dPSI(expression, tx2gene)
 pdPSI <- score_delta(dPSI, transcript, psiNormal, dPSI, minSamples = 2)
 
