@@ -33,8 +33,8 @@ find_switches <- function(tx_pdPSI, gene_pDE, pDE = 0.01, pdPSI = 0.01,
         # remove low deltaPSI
         filter(p_dPSI <= pdPSI & abs(dPSI) >= deltaPSI) %>%
         # remove lowly expressed transcript
-        filter((dPSI > 0 & tpmTumor > minExpression) |
-               (dPSI < 0 & tpmNormal > minExpression)) %>%
+        filter((dPSI > 0 & tpmTumor >= minExpression) |
+               (dPSI < 0 & tpmNormal >= minExpression)) %>%
         group_by(gene, sample) %>%
         # remove unelligible genes
         filter(n() > 1 & any(dPSI > 0) & any(dPSI < 0)) %>%
