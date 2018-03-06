@@ -16,7 +16,10 @@ Imports:
     edgeR,
     readr,
     tibble,
-    tidyr
+    tidyr,
+    ggplot2,
+    grid,
+    gridExtra
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
