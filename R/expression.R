@@ -80,10 +80,23 @@ score_delta <- function(df, probe, ctrl, delta, minValue = 0, minSamples = 10) {
 
 }
 
+#' Calculate sample-wise differential expression
+#'
+#' @description Computes the gene expression difference between normal and tumor
+#' conditions of the same sample. If no normal sample is available, computes the
+#' difference with the median expression. Prior to that, performs a
+#' normalization of the data.
+#' @param normalGeneExpression data.frame containing the gene expression in wide
+#' format. A column \code{gene} indicates the gene, and the rest of the column
+#' are the CPM for each sample.
+#' @param tumorGeneExpression Equivalent to normalGeneExpression with tumor
+#' data.
+#' @return A data.frame with the difference in expression \code{DE} between
+#' the conditions per gene and sample.
 #' @importFrom edgeR calcNormFactors cpm DGEList
 #' @importFrom dplyr left_join select %>%
 #' @importFrom tibble tibble
-calculate_dExpr <- function(normalGeneExpression, tumorGeneExpression) {
+calculate_DE <- function(normalGeneExpression, tumorGeneExpression) {
 
     # get sample names
     normalSamples <- colnames(normalGeneExpression)
@@ -100,14 +113,27 @@ calculate_dExpr <- function(normalGeneExpression, tumorGeneExpression) {
     y <- DGEList(counts = geneExpression)
     y <- calcNormFactors(y)
 
-    logNormGeneExpression <- cpm(y, normalized.lib.sizes=TRUE) %>%
-        log2
+    logNormGeneExpression <- cpm(y, normalized.lib.sizes = TRUE) %>% log2
     logNormGeneExpression[logNormGeneExpression == -Inf] <- NA
 
-    # calculate differential expression
-    tibble(gene = rownames(logNormGeneExpression),
-           pDE = apply(logNormGeneExpression, 1, function(x) {
-               wilcox.test(x[normalSamples], x[tumorSamples])$p.value
-           }))
+    normalGeneExpression <- data.frame(logNormGeneExpression[normalSamples]) %>%
+        tibble %>%
+        mutate(gene = genes) %>%
+        tpm2long(normalExpression)
+    tumorGeneExpression <- data.frame(logNormGeneExpression[tumorSamples]) %>%
+        tibble %>%
+        mutate(gene = genes) %>%
+        tpm2long(tumorExpression)
+
+    normalMedian <- normalGeneExpression %>%
+        group_by(gene) %>%
+        summarize(normalMedian = median(.data$normalExpression, na.rm = T))
+
+    left_join(normalGeneExpression, tumorGeneExpression, by = c('gene','sample')) %>%
+        left_join(normalMedian, by = 'gene') %>%
+        mutate(normalExpression = ifelse(is.na(.data$normalExpression),
+                                  .data$normalMedian, .data$normalExpression),
+               DE = .data$normalExpression - .data$tumorExpression) %>%
+        select(-normalMedian)
 
 }

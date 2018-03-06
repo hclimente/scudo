@@ -79,7 +79,7 @@ compute_isoform_switches <- function(normalTxExpressionFile,
     tumorGeneExpression <- read_tsv(tumorGeneExpressionFile, col_types = colt)
 
     gene_pDE <- calculate_dExpr(normalGeneExpression, tumorGeneExpression) %>%
-        score_delta(transcript, psiNormal, dPSI)
+        score_delta(transcript, normalExpression, DE)
 
     rm(normalGeneExpression, tumorGeneExpression)
 
