@@ -12,6 +12,7 @@
 #' differences are 0.}
 #' \item {return ecdf otherwise, counting that the minimum p-value will be 1/n+1
 #' }}
+#' @importFrom stats ecdf
 #' @export
 compute_ecdf <- function(x, minValue, minSamples){
 

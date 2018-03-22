@@ -27,6 +27,7 @@ tpm2long <- function(wide, colname) {
 #' @return A data.frame with the PSIs per sample and condition, and the
 #' corresponding deltaPSI between conditions.
 #' @importFrom dplyr group_by mutate select summarize ungroup %>%
+#' @importFrom stats median
 #' @export
 calculate_dPSI <- function(expression, tx2gene) {
 
@@ -94,20 +95,37 @@ score_delta <- function(df, probe, ctrl, delta, minValue = 0, minSamples = 10) {
 #' @return A data.frame with the difference in expression \code{DE} between
 #' the conditions per gene and sample.
 #' @importFrom edgeR calcNormFactors cpm DGEList
-#' @importFrom dplyr left_join select %>%
-#' @importFrom tibble tibble
-calculate_DE <- function(normalGeneExpression, tumorGeneExpression) {
+#' @importFrom dplyr everything left_join full_join select %>%
+#' @importFrom stats median
+#' @export
+calculate_DE <- function(geneExpression) {
 
-    # get sample names
-    normalSamples <- colnames(normalGeneExpression)
-    tumorSamples <- colnames(tumorGeneExpression)
+    normalMedian <- geneExpression %>%
+        group_by(gene) %>%
+        summarize(normalMedian = median(.data$normalExpression, na.rm = T))
+
+    left_join(geneExpression, normalMedian, by = 'gene') %>%
+        mutate(normalExpression = ifelse(is.na(.data$normalExpression),
+                                  .data$normalMedian, .data$normalExpression),
+               DE = .data$normalExpression - .data$tumorExpression) %>%
+        select(-normalMedian)
+
+}
+
+#' @export
+normalize_counts <- function(normalGeneExpression, tumorGeneExpression) {
 
     # generate expression matrix
-    geneExpression <- left_join(tumorGeneExpression, normalGeneExpression,
+    geneExpression <- left_join(normalGeneExpression, tumorGeneExpression,
                                 by = 'gene')
-    genes <- geneExpression$gene
+    genes <- geneExpression[,'gene']
     geneExpression <- select(geneExpression, -gene) %>% as.matrix
     rownames(geneExpression) <- genes
+
+    # get sample names
+    border <- ncol(normalGeneExpression)
+    normalSamples <- colnames(geneExpression)[1:border - 1]
+    tumorSamples <- colnames(geneExpression)[border:(border - 2 + ncol(tumorGeneExpression))]
 
     # normalize expression and calculate log2
     y <- DGEList(counts = geneExpression)
@@ -116,24 +134,16 @@ calculate_DE <- function(normalGeneExpression, tumorGeneExpression) {
     logNormGeneExpression <- cpm(y, normalized.lib.sizes = TRUE) %>% log2
     logNormGeneExpression[logNormGeneExpression == -Inf] <- NA
 
-    normalGeneExpression <- data.frame(logNormGeneExpression[normalSamples]) %>%
-        tibble %>%
+    normalGeneExpression <- data.frame(logNormGeneExpression[,normalSamples]) %>%
         mutate(gene = genes) %>%
-        tpm2long(normalExpression)
-    tumorGeneExpression <- data.frame(logNormGeneExpression[tumorSamples]) %>%
-        tibble %>%
+        select(gene, everything() ) %>%
+        tpm2long(normalExpression) %>%
+        mutate(sample = gsub('\\.x$', '', sample))
+    tumorGeneExpression <- data.frame(logNormGeneExpression[,tumorSamples]) %>%
         mutate(gene = genes) %>%
-        tpm2long(tumorExpression)
+        select(gene, everything() ) %>%
+        tpm2long(tumorExpression) %>%
+        mutate(sample = gsub('\\.y$', '', sample))
 
-    normalMedian <- normalGeneExpression %>%
-        group_by(gene) %>%
-        summarize(normalMedian = median(.data$normalExpression, na.rm = T))
-
-    left_join(normalGeneExpression, tumorGeneExpression, by = c('gene','sample')) %>%
-        left_join(normalMedian, by = 'gene') %>%
-        mutate(normalExpression = ifelse(is.na(.data$normalExpression),
-                                  .data$normalMedian, .data$normalExpression),
-               DE = .data$normalExpression - .data$tumorExpression) %>%
-        select(-normalMedian)
-
+    full_join(normalGeneExpression, tumorGeneExpression, by = c('gene','sample'))
 }

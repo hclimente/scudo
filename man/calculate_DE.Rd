@@ -4,7 +4,7 @@
 \alias{calculate_DE}
 \title{Calculate sample-wise differential expression}
 \usage{
-calculate_DE(normalGeneExpression, tumorGeneExpression)
+calculate_DE(geneExpression)
 }
 \arguments{
 \item{normalGeneExpression}{data.frame containing the gene expression in wide
