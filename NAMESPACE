@@ -3,6 +3,7 @@
 export(calculate_DE)
 export(calculate_dPSI)
 export(compute_ecdf)
+export(compute_isoform_switches)
 export(find_switches)
 export(normalize_counts)
 export(score_delta)

@@ -50,6 +50,7 @@ find_switches <- function(tx_pdPSI, gene_pDE, pDE = 0.01, pdPSI = 0.01,
 # /Users/hclimente/projects/spada/scripts/calculate_switches.R tx_normal tx_tumor gn_normal gn_tumor tx2gene switches.tsv
 #' @importFrom readr cols read_csv read_tsv write_tsv
 #' @importFrom dplyr left_join rename select %>%
+#' @export
 compute_isoform_switches <- function(normalTxExpressionFile,
                                      tumorTxExpressionFile,
                                      normalGeneExpressionFile,
