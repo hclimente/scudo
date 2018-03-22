@@ -85,13 +85,9 @@ score_delta <- function(df, probe, ctrl, delta, minValue = 0, minSamples = 10) {
 #'
 #' @description Computes the gene expression difference between normal and tumor
 #' conditions of the same sample. If no normal sample is available, computes the
-#' difference with the median expression. Prior to that, performs a
-#' normalization of the data.
-#' @param normalGeneExpression data.frame containing the gene expression in wide
-#' format. A column \code{gene} indicates the gene, and the rest of the column
-#' are the CPM for each sample.
-#' @param tumorGeneExpression Equivalent to normalGeneExpression with tumor
-#' data.
+#' difference with the median expression.
+#' @param geneExpression data.frame containing the gene expression in long
+#' format.
 #' @return A data.frame with the difference in expression \code{DE} between
 #' the conditions per gene and sample.
 #' @importFrom edgeR calcNormFactors cpm DGEList
@@ -112,6 +108,16 @@ calculate_DE <- function(geneExpression) {
 
 }
 
+#' Normalize gene expression counts
+#'
+#' @description Normalize gene expression counts.
+#' @param normalGeneExpression data.frame containing the gene expression in wide
+#' format. A column \code{gene} indicates the gene, and the rest of the column
+#' are the CPM for each sample.
+#' @param tumorGeneExpression Equivalent to normalGeneExpression with tumor
+#' data.
+#' @return A data.frame with the normal and tumor gene expression (both if
+#' samplenames match, else NA) per patient in log2 normalized counts.
 #' @export
 normalize_counts <- function(normalGeneExpression, tumorGeneExpression) {
 

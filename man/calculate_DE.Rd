@@ -7,12 +7,8 @@
 calculate_DE(geneExpression)
 }
 \arguments{
-\item{normalGeneExpression}{data.frame containing the gene expression in wide
-format. A column \code{gene} indicates the gene, and the rest of the column
-are the CPM for each sample.}
-
-\item{tumorGeneExpression}{Equivalent to normalGeneExpression with tumor
-data.}
+\item{geneExpression}{data.frame containing the gene expression in long
+format.}
 }
 \value{
 A data.frame with the difference in expression \code{DE} between
@@ -21,6 +17,5 @@ the conditions per gene and sample.
 \description{
 Computes the gene expression difference between normal and tumor
 conditions of the same sample. If no normal sample is available, computes the
-difference with the median expression. Prior to that, performs a
-normalization of the data.
+difference with the median expression.
 }
