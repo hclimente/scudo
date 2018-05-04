@@ -12,7 +12,7 @@ score_delta(df, probe, ctrl, delta, minValue = 0, minSamples = 10)
 \item{probe}{Unquoted name of the biomarker column (e.g. transcript).}
 
 \item{ctrl}{Unquoted name of the expression in the control condition column
-(e.g. tpmNormal).}
+(e.g. tpmCtrl).}
 
 \item{delta}{Unquoted name of the actual difference between conditions column
 (e.g. dPSI).}

@@ -34,19 +34,19 @@ calculate_dPSI <- function(expression, tx2gene) {
     dPSI <- expression %>%
         left_join(tx2gene, by = "transcript") %>%
         group_by(gene, sample) %>%
-        mutate(psiNormal = .data$tpmNormal/sum(.data$tpmNormal),
-               psiTumor = .data$tpmTumor/sum(.data$tpmTumor)) %>%
+        mutate(psiCtrl = .data$tpmCtrl/sum(.data$tpmCtrl),
+               psiCase = .data$tpmCase/sum(.data$tpmCase)) %>%
         ungroup
 
-    normalMedianPsi <- dPSI %>%
+    ctrlMedianPsi <- dPSI %>%
         group_by(transcript) %>%
-        summarize(psiNormalMedian = median(.data$psiNormal, na.rm = T))
+        summarize(psiCtrlMedian = median(.data$psiCtrl, na.rm = T))
 
-    left_join(dPSI, normalMedianPsi, by = "transcript") %>%
-        mutate(psiNormal = ifelse(is.na(.data$psiNormal),
-                                  .data$psiNormalMedian, .data$psiNormal),
-               dPSI = .data$psiNormal - .data$psiTumor) %>%
-        select(-psiNormalMedian)
+    left_join(dPSI, ctrlMedianPsi, by = "transcript") %>%
+        mutate(psiCtrl = ifelse(is.na(.data$psiCtrl),
+                                  .data$psiCtrlMedian, .data$psiCtrl),
+               dPSI = .data$psiCtrl - .data$psiCase) %>%
+        select(-psiCtrlMedian)
 
 }
 
@@ -57,7 +57,7 @@ calculate_dPSI <- function(expression, tx2gene) {
 #' @param df data.frame containing the differences.
 #' @param probe Unquoted name of the biomarker column (e.g. transcript).
 #' @param ctrl Unquoted name of the expression in the control condition column
-#' (e.g. tpmNormal).
+#' (e.g. tpmCtrl).
 #' @param delta Unquoted name of the actual difference between conditions column
 #' (e.g. dPSI).
 #' @param minValue Minimum value to consider a biomarker expressed.
@@ -83,73 +83,26 @@ score_delta <- function(df, probe, ctrl, delta, minValue = 0, minSamples = 10) {
 
 #' Calculate sample-wise differential expression
 #'
-#' @description Computes the gene expression difference between normal and tumor
-#' conditions of the same sample. If no normal sample is available, computes the
+#' @description Computes the gene expression difference between ctrl and case
+#' conditions of the same sample. If no ctrl sample is available, computes the
 #' difference with the median expression.
 #' @param geneExpression data.frame containing the gene expression in long
 #' format.
 #' @return A data.frame with the difference in expression \code{DE} between
 #' the conditions per gene and sample.
-#' @importFrom edgeR calcNormFactors cpm DGEList
 #' @importFrom dplyr everything left_join full_join select %>%
 #' @importFrom stats median
 #' @export
 calculate_DE <- function(geneExpression) {
 
-    normalMedian <- geneExpression %>%
+    ctrlMedian <- geneExpression %>%
         group_by(gene) %>%
-        summarize(normalMedian = median(.data$normalExpression, na.rm = T))
+        summarize(ctrlMedian = median(.data$ctrlExpression, na.rm = T))
 
-    left_join(geneExpression, normalMedian, by = 'gene') %>%
-        mutate(normalExpression = ifelse(is.na(.data$normalExpression),
-                                  .data$normalMedian, .data$normalExpression),
-               DE = .data$normalExpression - .data$tumorExpression) %>%
-        select(-normalMedian)
+    left_join(geneExpression, ctrlMedian, by = 'gene') %>%
+        mutate(ctrlExpression = ifelse(is.na(.data$ctrlExpression),
+                                  .data$ctrlMedian, .data$ctrlExpression),
+               DE = .data$ctrlExpression - .data$caseExpression) %>%
+        select(-ctrlMedian)
 
-}
-
-#' Normalize gene expression counts
-#'
-#' @description Normalize gene expression counts.
-#' @param normalGeneExpression data.frame containing the gene expression in wide
-#' format. A column \code{gene} indicates the gene, and the rest of the column
-#' are the CPM for each sample.
-#' @param tumorGeneExpression Equivalent to normalGeneExpression with tumor
-#' data.
-#' @return A data.frame with the normal and tumor gene expression (both if
-#' samplenames match, else NA) per patient in log2 normalized counts.
-#' @export
-normalize_counts <- function(normalGeneExpression, tumorGeneExpression) {
-
-    # generate expression matrix
-    geneExpression <- left_join(normalGeneExpression, tumorGeneExpression,
-                                by = 'gene')
-    genes <- geneExpression[,'gene']
-    geneExpression <- select(geneExpression, -gene) %>% as.matrix
-    rownames(geneExpression) <- genes
-
-    # get sample names
-    border <- ncol(normalGeneExpression)
-    normalSamples <- colnames(geneExpression)[1:border - 1]
-    tumorSamples <- colnames(geneExpression)[border:(border - 2 + ncol(tumorGeneExpression))]
-
-    # normalize expression and calculate log2
-    y <- DGEList(counts = geneExpression)
-    y <- calcNormFactors(y)
-
-    logNormGeneExpression <- cpm(y, normalized.lib.sizes = TRUE) %>% log2
-    logNormGeneExpression[logNormGeneExpression == -Inf] <- NA
-
-    normalGeneExpression <- data.frame(logNormGeneExpression[,normalSamples]) %>%
-        mutate(gene = genes) %>%
-        select(gene, everything() ) %>%
-        tpm2long(normalExpression) %>%
-        mutate(sample = gsub('\\.x$', '', sample))
-    tumorGeneExpression <- data.frame(logNormGeneExpression[,tumorSamples]) %>%
-        mutate(gene = genes) %>%
-        select(gene, everything() ) %>%
-        tpm2long(tumorExpression) %>%
-        mutate(sample = gsub('\\.y$', '', sample))
-
-    full_join(normalGeneExpression, tumorGeneExpression, by = c('gene','sample'))
 }

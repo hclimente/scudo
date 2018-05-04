@@ -1,5 +1,5 @@
 geneExpression <- read.table(text = "
-                                    gene sample normalExpression tumorExpression
+                                    gene sample ctrlExpression caseExpression
                                     A s1 2 3
                                     A s2 3 1
                                     A s3 1 10
@@ -20,18 +20,18 @@ test_that('output is as expected', {
     expect_true(all(geneExpression$sample %in% DE$sample))
 
     # samples have the right value-types
-    expect_false(any(is.na(DE$normalExpression)))
-    expect_equal(DE$sample[is.na(DE$tumorExpression)], 's5')
+    expect_false(any(is.na(DE$ctrlExpression)))
+    expect_equal(DE$sample[is.na(DE$caseExpression)], 's5')
 
     # delta is the right difference
-    expect_equal(DE$DE, DE$normalExpression - DE$tumorExpression)
-    expect_equal(is.na(DE$tumorExpression), is.na(DE$DE))
+    expect_equal(DE$DE, DE$ctrlExpression - DE$caseExpression)
+    expect_equal(is.na(DE$caseExpression), is.na(DE$DE))
 
 })
 
 test_that('output is compatible with score_delta', {
 
-    pDE <- score_delta(DE, gene, normalExpression, DE, minSamples = 2)
+    pDE <- score_delta(DE, gene, ctrlExpression, DE, minSamples = 2)
     expect_true(any(!is.na(pDE[,'p'])))
 
 })

@@ -15,7 +15,7 @@ A data.frame with the difference in expression \code{DE} between
 the conditions per gene and sample.
 }
 \description{
-Computes the gene expression difference between normal and tumor
-conditions of the same sample. If no normal sample is available, computes the
+Computes the gene expression difference between ctrl and case
+conditions of the same sample. If no ctrl sample is available, computes the
 difference with the median expression.
 }

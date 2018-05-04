@@ -11,7 +11,7 @@ find_switches(tx_pdPSI, gene_pDE, pDE = 0.01, pdPSI = 0.01,
 \item{tx_pdPSI}{data.frame with transcript-level annotation per sample, as
 outputted by \code{score_delta}. Must contain all of the following columns:
 \code{dPSI} indicating the deltaPSI and \code{p} scoring how extreme it is;
-\code{tpmNormal} and \code{tpmTumor} indicating the expression in the two
+\code{tpmCtrl} and \code{tpmCase} indicating the expression in the two
 conditions; and \code{transcript}, \code{gene} and \code{sample}.}
 
 \item{gene_pDE}{data.frame with gene-level annotation per sample, as

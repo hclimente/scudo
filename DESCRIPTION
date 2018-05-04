@@ -13,7 +13,6 @@ Description: Calculate isoform switches from transcriptomic data at
     sample.
 Imports:
     dplyr,
-    edgeR,
     readr,
     tibble,
     tidyr,

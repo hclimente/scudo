@@ -1,5 +1,5 @@
 expression <- read.table(text = "
-                         transcript sample tpmNormal tpmTumor
+                         transcript sample tpmCtrl tpmCase
                          A1 s1 1 1
                          A2 s1 1 1
                          A3 s1 1 1
@@ -22,7 +22,7 @@ tx2gene <- read.table(text = "
                       ", header = TRUE, stringsAsFactors = FALSE)
 
 dPSI <- calculate_dPSI(expression, tx2gene)
-pdPSI <- score_delta(dPSI, transcript, psiNormal, dPSI, minSamples = 2)
+pdPSI <- score_delta(dPSI, transcript, psiCtrl, dPSI, minSamples = 2)
 
 test_that('output is as expected', {
 
@@ -34,7 +34,7 @@ test_that('output is as expected', {
 test_that('dPSI p-value calculation is correct', {
 
     for (tx in c('A1','A2','A3')) {
-        f <- compute_ecdf(subset(dPSI, transcript == tx)$psiNormal, 0, 2)
+        f <- compute_ecdf(subset(dPSI, transcript == tx)$psiCtrl, 0, 2)
         expect_equal(subset(pdPSI, transcript == tx)$p,
                      f(subset(pdPSI, transcript == tx)$dPSI))
     }

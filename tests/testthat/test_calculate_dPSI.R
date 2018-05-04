@@ -1,5 +1,5 @@
 expression <- read.table(text = "
-                         transcript sample tpmNormal tpmTumor
+                         transcript sample tpmCtrl tpmCase
                          A1 s1 1 1
                          A2 s1 1 1
                          A3 s1 1 1
@@ -32,33 +32,33 @@ test_that('output is as expected', {
 
 test_that('PSI calculation is correct', {
 
-    # normal
-    expect_equal(subset(dPSI, sample == 's1' & transcript == 'A1')$psiNormal, 1/3)
-    expect_equal(subset(dPSI, sample == 's1' & transcript == 'A2')$psiNormal, 1/3)
-    expect_equal(subset(dPSI, sample == 's1' & transcript == 'A3')$psiNormal, 1/3)
-    expect_equal(subset(dPSI, sample == 's2' & transcript == 'A1')$psiNormal, 1/2)
-    expect_equal(subset(dPSI, sample == 's2' & transcript == 'A2')$psiNormal, 1/3)
-    expect_equal(subset(dPSI, sample == 's2' & transcript == 'A3')$psiNormal, 1/6)
-    expect_equal(subset(dPSI, sample == 's3' & transcript == 'A1')$psiNormal, 1/2)
-    expect_equal(subset(dPSI, sample == 's3' & transcript == 'A2')$psiNormal, 1/3)
-    expect_equal(subset(dPSI, sample == 's3' & transcript == 'A3')$psiNormal, 1/6)
-    expect_equal(subset(dPSI, sample == 's4' & transcript == 'A1')$psiNormal, 1/2)
-    expect_equal(subset(dPSI, sample == 's4' & transcript == 'A2')$psiNormal, 1/3)
-    expect_equal(subset(dPSI, sample == 's4' & transcript == 'A3')$psiNormal, 1/6)
+    # Ctrl
+    expect_equal(subset(dPSI, sample == 's1' & transcript == 'A1')$psiCtrl, 1/3)
+    expect_equal(subset(dPSI, sample == 's1' & transcript == 'A2')$psiCtrl, 1/3)
+    expect_equal(subset(dPSI, sample == 's1' & transcript == 'A3')$psiCtrl, 1/3)
+    expect_equal(subset(dPSI, sample == 's2' & transcript == 'A1')$psiCtrl, 1/2)
+    expect_equal(subset(dPSI, sample == 's2' & transcript == 'A2')$psiCtrl, 1/3)
+    expect_equal(subset(dPSI, sample == 's2' & transcript == 'A3')$psiCtrl, 1/6)
+    expect_equal(subset(dPSI, sample == 's3' & transcript == 'A1')$psiCtrl, 1/2)
+    expect_equal(subset(dPSI, sample == 's3' & transcript == 'A2')$psiCtrl, 1/3)
+    expect_equal(subset(dPSI, sample == 's3' & transcript == 'A3')$psiCtrl, 1/6)
+    expect_equal(subset(dPSI, sample == 's4' & transcript == 'A1')$psiCtrl, 1/2)
+    expect_equal(subset(dPSI, sample == 's4' & transcript == 'A2')$psiCtrl, 1/3)
+    expect_equal(subset(dPSI, sample == 's4' & transcript == 'A3')$psiCtrl, 1/6)
 
-    # tumor
-    expect_equal(subset(dPSI, sample == 's1' & transcript == 'A1')$psiTumor, 1/3)
-    expect_equal(subset(dPSI, sample == 's1' & transcript == 'A2')$psiTumor, 1/3)
-    expect_equal(subset(dPSI, sample == 's1' & transcript == 'A3')$psiTumor, 1/3)
-    expect_true(is.na(subset(dPSI, sample == 's2' & transcript == 'A1')$psiTumor), NA)
-    expect_true(is.na(subset(dPSI, sample == 's2' & transcript == 'A2')$psiTumor), NA)
-    expect_true(is.na(subset(dPSI, sample == 's2' & transcript == 'A3')$psiTumor), NA)
-    expect_equal(subset(dPSI, sample == 's3' & transcript == 'A1')$psiTumor, 1/6)
-    expect_equal(subset(dPSI, sample == 's3' & transcript == 'A2')$psiTumor, 1/3)
-    expect_equal(subset(dPSI, sample == 's3' & transcript == 'A3')$psiTumor, 1/2)
-    expect_equal(subset(dPSI, sample == 's4' & transcript == 'A1')$psiTumor, 1/6)
-    expect_equal(subset(dPSI, sample == 's4' & transcript == 'A2')$psiTumor, 1/3)
-    expect_equal(subset(dPSI, sample == 's4' & transcript == 'A3')$psiTumor, 1/2)
+    # Case
+    expect_equal(subset(dPSI, sample == 's1' & transcript == 'A1')$psiCase, 1/3)
+    expect_equal(subset(dPSI, sample == 's1' & transcript == 'A2')$psiCase, 1/3)
+    expect_equal(subset(dPSI, sample == 's1' & transcript == 'A3')$psiCase, 1/3)
+    expect_true(is.na(subset(dPSI, sample == 's2' & transcript == 'A1')$psiCase), NA)
+    expect_true(is.na(subset(dPSI, sample == 's2' & transcript == 'A2')$psiCase), NA)
+    expect_true(is.na(subset(dPSI, sample == 's2' & transcript == 'A3')$psiCase), NA)
+    expect_equal(subset(dPSI, sample == 's3' & transcript == 'A1')$psiCase, 1/6)
+    expect_equal(subset(dPSI, sample == 's3' & transcript == 'A2')$psiCase, 1/3)
+    expect_equal(subset(dPSI, sample == 's3' & transcript == 'A3')$psiCase, 1/2)
+    expect_equal(subset(dPSI, sample == 's4' & transcript == 'A1')$psiCase, 1/6)
+    expect_equal(subset(dPSI, sample == 's4' & transcript == 'A2')$psiCase, 1/3)
+    expect_equal(subset(dPSI, sample == 's4' & transcript == 'A3')$psiCase, 1/2)
 
 })
 
