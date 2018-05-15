@@ -20,13 +20,13 @@ compute_ecdf <- function(x, minValue, minSamples){
 
     # discard cases with less than 10 valid cases
     if ( sum(!is.na(v)) < minSamples | sum(v[!is.na(v)] >= minValue) < minSamples){
-        f <- uninformativeOutput
+        f <- uninformative_output
     } else {
         diffMatrix <- abs(outer(v,v,"-"))
         subtraction <- diffMatrix[lower.tri(diffMatrix, diag = FALSE)]
 
         if (all(subtraction[!is.na(subtraction)]==0)){
-            f <- uninformativeInput
+            f <- uninformative_input
         } else {
             f <- ecdf(subtraction)
         }
@@ -40,7 +40,7 @@ compute_ecdf <- function(x, minValue, minSamples){
 #' @description ecdf function where anything higher than 0 gets a p-value of 1.
 #' @param x numerical vector
 #' @return Numerical vector with 0 when the input is 0, and 1 when it is > 0.
-uninformativeInput <- function(x) {
+uninformative_input <- function(x) {
 
     p <- rep(NA, length(x))
     p[x == 0] <- 0
@@ -54,7 +54,7 @@ uninformativeInput <- function(x) {
 #' @description ecdf function where anything returns NA.
 #' @param x numerical vector.
 #' @return Numerical vector with NAs.
-uninformativeOutput <- function(x){
+uninformative_output <- function(x){
 
     return(rep(NA, length(x)))
 
@@ -70,7 +70,7 @@ uninformativeOutput <- function(x){
 #' @importFrom dplyr full_join mutate select
 #' @importFrom readr cols read_tsv
 #' @importFrom tidyr gather
-readTxExpression <- function(ctrlExpressionFile, caseExpressionFile) {
+read_tx_expression <- function(ctrlExpressionFile, caseExpressionFile) {
 
     colt <- cols(transcript = "c", .default = "d")
     ctrlTxExpression <- read_tsv(ctrlExpressionFile, col_types = colt) %>%
@@ -92,7 +92,7 @@ readTxExpression <- function(ctrlExpressionFile, caseExpressionFile) {
 #' @param tx2geneFile File containing genes-transcript correspondence, one
 #' per line.
 #' @return Data frame with gene expression in TPM in long format.
-getGeneExpression <- function(txExpression, tx2geneFile) {
+get_gene_expression <- function(txExpression, tx2geneFile) {
 
     tx2gene <- read_csv(tx2geneFile, col_types = 'cc')
 

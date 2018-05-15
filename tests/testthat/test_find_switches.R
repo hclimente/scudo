@@ -16,8 +16,7 @@ gene_pDE <- read.table(text = "
 
 test_that('dPSI conditions the switches', {
 
-    tmp <- mutate(tx_pdPSI, dPSI = c(0.04, 0.1, -0.1,
-                                     -0.1, 0.1, 0.04))
+    tmp <- mutate(tx_pdPSI, dPSI = c(0.04, 0.1, -0.1, -0.1, 0.1, 0.04))
 
     expect_equal(filter(tmp, dPSI != 0.1) %>%
                     find_switches(gene_pDE, deltaPSI = 0.04),
@@ -33,8 +32,7 @@ test_that('dPSI conditions the switches', {
 
 test_that('pdPSI conditions the switches', {
 
-    tmp <- mutate(tx_pdPSI, p = c(0.01, 0.1, 0.01,
-                                  0.01, 0.1, 0.01))
+    tmp <- mutate(tx_pdPSI, p = c(0.01, 0.1, 0.01, 0.01, 0.1, 0.01))
 
     expect_equal(find_switches(tmp, gene_pDE),
                  read.table(text = "
@@ -54,10 +52,8 @@ test_that('pdPSI conditions the switches', {
 
 test_that('minExpression conditions the switches', {
 
-    tmp <- mutate(tx_pdPSI, tpmCtrl = c(1, 1, 1,
-                                          0.05, 1, 1),
-                            tpmCase = c(1, 0.05, 1,
-                                         1, 1, 1))
+    tmp <- mutate(tx_pdPSI, tpmCtrl = c(1, 1, 1, 0.05, 1, 1),
+                            tpmCase = c(1, 0.05, 1, 1, 1, 1))
 
     expect_equal(find_switches(tmp, gene_pDE),
                  read.table(text = "
@@ -95,8 +91,7 @@ test_that('pDE conditions the switches', {
 
 test_that('we aggreggate patients with matching switches', {
 
-    tmp <- mutate(tx_pdPSI, dPSI = c(0.04, 0.1, -0.1,
-                                     0.04, 0.1, -0.1))
+    tmp <- mutate(tx_pdPSI, dPSI = c(0.04, 0.1, -0.1, 0.04, 0.1, -0.1))
 
     expect_equal(find_switches(tmp, gene_pDE, deltaPSI = 0.04),
                  read.table(text = "

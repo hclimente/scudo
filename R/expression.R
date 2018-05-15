@@ -80,12 +80,12 @@ calculate_DE <- function(geneExpression) {
 
     ctrlMedian <- geneExpression %>%
         group_by(gene) %>%
-        summarize(ctrlMedian = median(.data$ctrlExpression, na.rm = T))
+        summarize(ctrlMedian = median(.data$tpmCtrl, na.rm = T))
 
     left_join(geneExpression, ctrlMedian, by = 'gene') %>%
-        mutate(ctrlExpression = ifelse(is.na(.data$ctrlExpression),
-                                  .data$ctrlMedian, .data$ctrlExpression),
-               DE = .data$ctrlExpression - .data$caseExpression) %>%
+        mutate(tpmCtrl = ifelse(is.na(.data$tpmCtrl),
+                                .data$ctrlMedian, .data$tpmCtrl),
+               DE = .data$tpmCtrl - .data$tpmCase) %>%
         select(-ctrlMedian)
 
 }

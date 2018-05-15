@@ -1,4 +1,4 @@
-xpr <- readTxExpression('ctrlExpression.tsv', 'caseExpression.tsv')
+xpr <- read_tx_expression('ctrlExpression.tsv', 'caseExpression.tsv')
 
 test_that('output is as expected', {
 

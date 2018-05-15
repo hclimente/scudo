@@ -1,5 +1,5 @@
-xpr <- readTxExpression('ctrlExpression.tsv', 'caseExpression.tsv') %>%
-    getGeneExpression('tx2gene.csv')
+xpr <- read_tx_expression('ctrlExpression.tsv', 'caseExpression.tsv') %>%
+    get_gene_expression('tx2gene.csv')
 
 test_that('output is as expected', {
 

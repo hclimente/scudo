@@ -64,17 +64,19 @@ find_switches <- function(tx_pdPSI, gene_pDE, pDE = 0.01, pdPSI = 0.01,
 compute_isoform_switches <- function(ctrlExpressionFile, caseExpressionFile,
                                      tx2geneFile, outfile, ...) {
 
+    tx2gene <- read_csv(tx2geneFile, col_types = 'cc')
+
     print("Differential transcript-expression")
-    txExpression <- readTxExpression(ctrlTxExpression, caseTxExpression)
+    txExpression <- read_tx_expression(ctrlExpressionFile, caseExpressionFile)
 
     tx_pdPSI <- txExpression %>%
         calculate_dPSI(tx2gene) %>%
         score_delta(transcript, psiCtrl, dPSI)
 
     print("Calculate differential gene-expression")
-    gene_pDE <- getGeneExpression(txExpression, tx2geneFile) %>%
+    gene_pDE <- get_gene_expression(txExpression, tx2geneFile) %>%
         calculate_DE %>%
-        score_delta(gene, ctrlExpression, DE)
+        score_delta(gene, tpmCtrl, DE)
     rm(txExpression)
 
     print("Compute switches")
