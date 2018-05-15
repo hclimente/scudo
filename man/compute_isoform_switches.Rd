@@ -5,7 +5,7 @@
 \title{Compute isoform switches}
 \usage{
 compute_isoform_switches(ctrlExpressionFile, caseExpressionFile, tx2geneFile,
-  outfile)
+  outfile, ...)
 }
 \arguments{
 \item{ctrlExpressionFile}{Tab-separated table with normalized
@@ -18,6 +18,8 @@ transcript-level expression for the case samples, in log2(TPM + 0.001).}
 to genes (one per line).}
 
 \item{outfile}{Output file.}
+
+\item{...}{arguments passed to the \code{\link{find_switches}} function.}
 }
 \description{
 Top-level function to find isoform switches from transcript- and

@@ -57,45 +57,28 @@ find_switches <- function(tx_pdPSI, gene_pDE, pDE = 0.01, pdPSI = 0.01,
 #' @param tx2geneFile  Tab-separated table with the assignation of transcripts
 #' to genes (one per line).
 #' @param outfile Output file.
+#' @param ... arguments passed to the \code{\link{find_switches}} function.
 #' @importFrom readr cols read_csv read_tsv write_tsv
 #' @importFrom dplyr left_join rename select %>%
 #' @export
 compute_isoform_switches <- function(ctrlExpressionFile, caseExpressionFile,
-                                     tx2geneFile, outfile) {
+                                     tx2geneFile, outfile, ...) {
 
     print("Differential transcript-expression")
-    tx2gene <- read_csv(tx2geneFile, col_types = 'cc')
-
-    colt <- cols(transcript = "c", .default = "d")
-    ctrlTxExpression <- read_tsv(ctrlTxExpressionFile, col_types = colt) %>%
-        tpm2long(tpmCtrl) %>%
-        mutate(tpmCtrl = -0.001 + 2^(tpmCtrl))
-    caseTxExpression <- read_tsv(caseTxExpressionFile, col_types = colt) %>%
-        tpm2long(tpmCase) %>%
-        mutate(tpmCase = -0.001 + 2^(tpmCase))
-    txExpression <- full_join(ctrlTxExpression, caseTxExpression,
-                              by = c('transcript', 'sample'))
-    rm(ctrlTxExpression, caseTxExpression)
+    txExpression <- readTxExpression(ctrlTxExpression, caseTxExpression)
 
     tx_pdPSI <- txExpression %>%
-        select(transcript, sample, tpmCtrl, tpmCase) %>%
         calculate_dPSI(tx2gene) %>%
         score_delta(transcript, psiCtrl, dPSI)
 
     print("Calculate differential gene-expression")
-    geneExpression <- inner_join(txExpression, tx2gene) %>%
-        select(-transcript) %>%
-        group_by(gene) %>%
-        summarise_all(funs(sum))
-    rm(txExpression)
-
-    gene_pDE <- geneExpression %>%
+    gene_pDE <- getGeneExpression(txExpression, tx2geneFile) %>%
         calculate_DE %>%
         score_delta(gene, ctrlExpression, DE)
-    rm(geneExpression)
+    rm(txExpression)
 
     print("Compute switches")
-    find_switches(tx_pdPSI, gene_pDE) %>%
+    find_switches(tx_pdPSI, gene_pDE, ...) %>%
         write_tsv(outfile)
 
 }

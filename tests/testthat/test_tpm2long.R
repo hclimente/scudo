@@ -16,7 +16,7 @@ expression <- read.table(text = "
 
 test_that('output is as expected', {
 
-    long <- tpm2long(expression, measured)
+    long <- gather(expression, key = sample, value = measured, -1)
 
     # size is expected
     expect_true(is.data.frame(long))

@@ -8,7 +8,7 @@ calculate_dPSI(expression, tx2gene)
 }
 \arguments{
 \item{expression}{data.frame with the expression information in long format,
-as outputed by \code{tpm2long}.}
+with column names 'gene','sample','tpmCtrl' and 'tpmCase'.}
 
 \item{tx2gene}{data.frame with two columns, named "transcript" and "gene",
 which contains the transcript-gene mapping.}

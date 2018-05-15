@@ -1,27 +1,10 @@
-#' Convert TPM to long format
-#'
-#' @description Converts TPM, wide-format matrix to a long format tibble.
-#' @param wide Wide format data.frame with TPM values. First column contains the
-#' transcript id, and succesive columns are the different samples.
-#' @param colname Unquoted name of the desired expression column name.
-#' @return A data.frame with three columns: transcript, sample and expression.
-#' @importFrom dplyr enquo
-#' @importFrom tidyr gather
-#' @export
-tpm2long <- function(wide, colname) {
-
-    colname <- enquo(colname)
-    gather(wide, key = sample, value = !!colname, -1)
-
-}
-
 #' Calculate deltaPSI
 #'
 #' @description Calculates the deltaPSI between two conditions. When a subject
 #' has matching samples for the two conditions, that value is taken. Else, the
 #' deltaPSI is compared to the median of the controls.
 #' @param expression data.frame with the expression information in long format,
-#' as outputed by \code{tpm2long}.
+#' with column names 'gene','sample','tpmCtrl' and 'tpmCase'.
 #' @param tx2gene data.frame with two columns, named "transcript" and "gene",
 #' which contains the transcript-gene mapping.
 #' @return A data.frame with the PSIs per sample and condition, and the

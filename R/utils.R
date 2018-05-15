@@ -52,11 +52,53 @@ uninformativeInput <- function(x) {
 #' Pseudo-ecdf when input is insufficient
 #'
 #' @description ecdf function where anything returns NA.
-#' @param x numerical vector
-#' @return Numerical vector with NAs
-#' .
+#' @param x numerical vector.
+#' @return Numerical vector with NAs.
 uninformativeOutput <- function(x){
 
     return(rep(NA, length(x)))
+
+}
+
+#' Read expression
+#'
+#' @param ctrlExpressionFile File containing the transcript expression for
+#' the control samples, measured in log2(TPMs + 0.001).
+#' @param caseExpressionFile File containing the transcript expression for
+#' the case samples, measured in log2(TPMs + 0.001).
+#' @return Data frame with transcript expression in TPM in long format.
+#' @importFrom dplyr full_join mutate select
+#' @importFrom readr cols read_tsv
+#' @importFrom tidyr gather
+readTxExpression <- function(ctrlExpressionFile, caseExpressionFile) {
+
+    colt <- cols(transcript = "c", .default = "d")
+    ctrlTxExpression <- read_tsv(ctrlExpressionFile, col_types = colt) %>%
+        gather(key = sample, value = expression, -1) %>%
+        mutate(tpmCtrl = -0.001 + 2^(expression))
+    caseTxExpression <- read_tsv(caseExpressionFile, col_types = colt) %>%
+        gather(key = sample, value = expression, -1) %>%
+        mutate(tpmCase = -0.001 + 2^(expression))
+
+    full_join(ctrlTxExpression, caseTxExpression,
+              by = c('transcript', 'sample')) %>%
+        select(transcript, sample, tpmCtrl, tpmCase)
+
+}
+
+#' Read expression
+#'
+#' @param txExpression Data frame with expression in TPM in long format.
+#' @param tx2geneFile File containing genes-transcript correspondence, one
+#' per line.
+#' @return Data frame with gene expression in TPM in long format.
+getGeneExpression <- function(txExpression, tx2geneFile) {
+
+    tx2gene <- read_csv(tx2geneFile, col_types = 'cc')
+
+    inner_join(txExpression, tx2gene, by = "transcript") %>%
+        select(-transcript) %>%
+        group_by(gene, sample) %>%
+        summarise_all(funs(sum))
 
 }

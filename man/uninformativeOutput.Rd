@@ -7,11 +7,10 @@
 uninformativeOutput(x)
 }
 \arguments{
-\item{x}{numerical vector}
+\item{x}{numerical vector.}
 }
 \value{
-Numerical vector with NAs
-.
+Numerical vector with NAs.
 }
 \description{
 ecdf function where anything returns NA.
