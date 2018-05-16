@@ -92,6 +92,8 @@ read_tx_expression <- function(ctrlExpressionFile, caseExpressionFile) {
 #' @param tx2geneFile File containing genes-transcript correspondence, one
 #' per line.
 #' @return Data frame with gene expression in TPM in long format.
+#' @importFrom dplyr funs group_by inner_join select summarise_all
+#' @importFrom readr read_csv
 get_gene_expression <- function(txExpression, tx2geneFile) {
 
     tx2gene <- read_csv(tx2geneFile, col_types = 'cc')
