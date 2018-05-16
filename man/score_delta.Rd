@@ -4,7 +4,7 @@
 \alias{score_delta}
 \title{Measure p of delta}
 \usage{
-score_delta(df, probe, ctrl, delta, minValue = 0, minSamples = 10)
+score_delta(df, probe, ctrl, delta, minTpm = 0, minSamples = 10)
 }
 \arguments{
 \item{df}{data.frame containing the differences.}
@@ -17,10 +17,10 @@ score_delta(df, probe, ctrl, delta, minValue = 0, minSamples = 10)
 \item{delta}{Unquoted name of the actual difference between conditions column
 (e.g. dPSI).}
 
-\item{minValue}{Minimum value to consider a biomarker expressed.}
+\item{minTpm}{Minimum TPM to consider a transcript/gene expressed.}
 
 \item{minSamples}{Minimum number of samples to consider the differences
-informative. If the number of samples with a valid value (i.e. >= minValue)
+informative. If the number of samples with a valid value (i.e. >= minTpm)
 is < minSamples, NAs will be returned.}
 }
 \value{

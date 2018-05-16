@@ -5,7 +5,7 @@
 \title{Compute isoform switches}
 \usage{
 compute_isoform_switches(ctrlExpressionFile, caseExpressionFile, tx2geneFile,
-  outfile, ...)
+  outfile, minTpm = 0.1, minSamples = 10, ...)
 }
 \arguments{
 \item{ctrlExpressionFile}{Tab-separated table with normalized

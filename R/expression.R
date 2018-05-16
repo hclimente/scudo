@@ -43,15 +43,15 @@ calculate_dPSI <- function(expression, tx2gene) {
 #' (e.g. tpmCtrl).
 #' @param delta Unquoted name of the actual difference between conditions column
 #' (e.g. dPSI).
-#' @param minValue Minimum value to consider a biomarker expressed.
+#' @param minTpm Minimum TPM to consider a transcript/gene expressed.
 #' @param minSamples Minimum number of samples to consider the differences
-#' informative. If the number of samples with a valid value (i.e. >= minValue)
+#' informative. If the number of samples with a valid value (i.e. >= minTpm)
 #' is < minSamples, NAs will be returned.
 #' @return A copy of df with an extra column \code{p} indicating the probability
 #' of the difference.
 #' @importFrom dplyr enquo group_by mutate ungroup %>%
 #' @export
-score_delta <- function(df, probe, ctrl, delta, minValue = 0, minSamples = 10) {
+score_delta <- function(df, probe, ctrl, delta, minTpm = 0, minSamples = 10) {
 
     probe <- enquo(probe)
     ctrl <- enquo(ctrl)
@@ -59,7 +59,7 @@ score_delta <- function(df, probe, ctrl, delta, minValue = 0, minSamples = 10) {
 
     df %>%
         group_by(!!probe) %>%
-        mutate(p = compute_ecdf(!!ctrl, minValue, minSamples)(!!delta)) %>%
+        mutate(p = compute_ecdf(!!ctrl, minTpm, minSamples)(!!delta)) %>%
         ungroup
 
 }

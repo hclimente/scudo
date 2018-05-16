@@ -23,7 +23,9 @@
 find_switches <- function(tx_pdPSI, gene_pDE, pDE = 0.01, pdPSI = 0.01,
                           deltaPSI = 0.05, minExpression = 0.1) {
 
-    tx_pdPSI <- rename(tx_pdPSI, p_dPSI = p)
+    tx_pdPSI <- rename(tx_pdPSI, p_dPSI = p,
+                                 tpmCtrlTx = tpmCtrl,
+                                 tpmCaseTx = tpmCase)
     gene_pDE <- rename(gene_pDE, p_DiffEExpression = p)
 
     left_join(tx_pdPSI, gene_pDE, by = c("gene", "sample")) %>%
@@ -32,8 +34,8 @@ find_switches <- function(tx_pdPSI, gene_pDE, pDE = 0.01, pdPSI = 0.01,
         # remove low deltaPSI
         filter(p_dPSI <= pdPSI & abs(dPSI) >= deltaPSI) %>%
         # remove lowly expressed transcript
-        filter((dPSI > 0 & tpmCase >= minExpression) |
-               (dPSI < 0 & tpmCtrl >= minExpression)) %>%
+        filter((dPSI > 0 & tpmCaseTx >= minExpression) |
+               (dPSI < 0 & tpmCtrlTx >= minExpression)) %>%
         group_by(gene, sample) %>%
         # remove unelligible genes
         filter(n() > 1 & any(dPSI > 0) & any(dPSI < 0)) %>%
@@ -41,7 +43,8 @@ find_switches <- function(tx_pdPSI, gene_pDE, pDE = 0.01, pdPSI = 0.01,
                   case = transcript[which.max(dPSI)]) %>%
         ungroup %>%
         group_by(gene, ctrl, case) %>%
-        summarize(samples = paste(sample, collapse = ','))
+        summarize(samples = paste(sample, collapse = ',')) %>%
+        ungroup
 
 }
 
@@ -62,24 +65,25 @@ find_switches <- function(tx_pdPSI, gene_pDE, pDE = 0.01, pdPSI = 0.01,
 #' @importFrom dplyr left_join rename select %>%
 #' @export
 compute_isoform_switches <- function(ctrlExpressionFile, caseExpressionFile,
-                                     tx2geneFile, outfile, ...) {
+                                     tx2geneFile, outfile,
+                                     minTpm = 0.1, minSamples = 10, ...) {
 
     tx2gene <- read_csv(tx2geneFile, col_types = 'cc')
 
-    print("Differential transcript-expression")
+    message("Differential transcript-expression")
     txExpression <- read_tx_expression(ctrlExpressionFile, caseExpressionFile)
 
     tx_pdPSI <- txExpression %>%
         calculate_dPSI(tx2gene) %>%
-        score_delta(transcript, psiCtrl, dPSI)
+        score_delta(transcript, psiCtrl, dPSI, minSamples = minSamples)
 
-    print("Calculate differential gene-expression")
+    message("Calculate differential gene-expression")
     gene_pDE <- get_gene_expression(txExpression, tx2geneFile) %>%
         calculate_DE %>%
-        score_delta(gene, tpmCtrl, DE)
+        score_delta(gene, tpmCtrl, DE, minSamples = minSamples)
     rm(txExpression)
 
-    print("Compute switches")
+    message("Compute switches")
     find_switches(tx_pdPSI, gene_pDE, ...) %>%
         write_tsv(outfile)
 

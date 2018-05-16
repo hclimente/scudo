@@ -19,7 +19,7 @@ test_that('dPSI conditions the switches', {
     tmp <- mutate(tx_pdPSI, dPSI = c(0.04, 0.1, -0.1, -0.1, 0.1, 0.04))
 
     expect_equal(filter(tmp, dPSI != 0.1) %>%
-                    find_switches(gene_pDE, deltaPSI = 0.04),
+                 find_switches(gene_pDE, deltaPSI = 0.04),
                  read.table(text = "
                             gene ctrl case samples
                             A A3 A1 s1
